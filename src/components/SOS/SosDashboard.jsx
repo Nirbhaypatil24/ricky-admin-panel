@@ -23,7 +23,7 @@ const SosDashboard = () => {
 
   const connectStomp = () => {
     const socket = new SockJS(
-      'https://ec2-13-220-53-209.compute-1.amazonaws.com/ws-browser'
+      'https://ec2-3-109-49-80.ap-south-1.compute.amazonaws.com/ws-browser'
     );
 
     const client = new Client({
