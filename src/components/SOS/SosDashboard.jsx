@@ -50,7 +50,8 @@ const SosDashboard = () => {
   };
 
   const connectStomp = () => {
-    const wsUrl = 'https://ec2-3-109-49-80.ap-south-1.compute.amazonaws.com/ws-browser';
+    const socket = new SockJS(
+  'https://ec2-3-109-49-80.ap-south-1.compute.amazonaws.com/ws-browser');
 
     const client = new Client({
       webSocketFactory: () => new WebSocket(wsUrl),
