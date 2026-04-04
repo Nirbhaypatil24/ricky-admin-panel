@@ -92,7 +92,7 @@ export const rideFareService = {
 
 // SOS Service
 export const sosService = {
-  sendSosAlert: (alertData) => api.post('/sos'),
+  sendSosAlert: (alertData) => api.post('/sos', alertData),
   getAllAlerts: () => api.get('/sos'),
   getActiveAlerts: () => api.get('/sos/active'),
   acknowledgeAlert: (alertId) => api.put(`/sos/${alertId}/acknowledge`)
