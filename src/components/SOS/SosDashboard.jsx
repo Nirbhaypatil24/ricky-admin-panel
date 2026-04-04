@@ -50,7 +50,7 @@ const SosDashboard = () => {
   };
 
   const connectStomp = () => {
-    const wsUrl = 'wss://ec2-13-220-53-209.compute-1.amazonaws.com/ws-ricky';
+    const wsUrl = 'https://ec2-13-220-53-209.compute-1.amazonaws.com/ws-browser';
 
     const client = new Client({
       webSocketFactory: () => new WebSocket(wsUrl),
