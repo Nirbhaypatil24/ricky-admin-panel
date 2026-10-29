@@ -7,11 +7,11 @@ import { plate } from '../../lib/format';
 import { useThemeContext } from '../../lib/theme';
 
 const DEFAULT_CENTER = [19.076, 72.8777]; // Mumbai, where the test units run
-const TILES = {
-  light: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-  dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-};
-const ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
+// OpenStreetMap's own tiles need no API key (CARTO's free tiles now show an "API KEY REQUIRED" watermark).
+// To use a keyed provider instead (MapTiler, Stadia, CARTO with a key…), set VITE_MAP_TILE_URL and
+// VITE_MAP_ATTRIBUTION at build time. Dark mode darkens the light tiles with a CSS filter (.tiles-dark).
+const TILE_URL = import.meta.env.VITE_MAP_TILE_URL || 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+const ATTRIBUTION = import.meta.env.VITE_MAP_ATTRIBUTION || '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
 const iconCache = new Map();
 function unitIcon(u, selected) {
@@ -105,7 +105,7 @@ export default function FleetMap({
   return (
     <div className={`relative overflow-hidden ${className}`}>
       <MapContainer center={DEFAULT_CENTER} zoom={11} className="h-full w-full" zoomControl scrollWheelZoom>
-        <TileLayer key={resolved} url={TILES[resolved] || TILES.light} attribution={ATTRIBUTION} subdomains="abcd" maxZoom={20} />
+        <TileLayer key={resolved} url={TILE_URL} attribution={ATTRIBUTION} maxZoom={19} className={resolved === 'dark' ? 'tiles-dark' : ''} />
         <Controller points={points} fitKey={fitKey} focus={focus} />
 
         {trail && trail.length > 1 && (

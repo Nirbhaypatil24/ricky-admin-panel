@@ -20,6 +20,7 @@ in the panel under **Connection and alerts** (bottom of the sidebar):
 | `VITE_API_BASE_URL` | `https://ec2-3-109-49-80.ap-south-1.compute.amazonaws.com/api` |
 | `VITE_WS_URL` | derived from the API address: `wss://<host>/ws-ricky` |
 | `VITE_ADMIN_API_KEY` | empty; only needed when `ADMIN_API_KEY` is set on the backend |
+| `VITE_MAP_TILE_URL` / `VITE_MAP_ATTRIBUTION` | OpenStreetMap tiles (no key). Set these to use MapTiler, Stadia or CARTO with your own key |
 
 The backend must allow the panel's origin in `CORS_ORIGINS`. Browsers refuse a self-signed certificate, so the
 API needs a real certificate (see the backend's `deploy/AWS_DEPLOYMENT.md`).

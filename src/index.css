@@ -256,6 +256,11 @@
   @apply text-muted !important;
 }
 
+/* Dark theme: darken the light OpenStreetMap tiles (keeps roads readable, no second tile provider needed) */
+.tiles-dark {
+  filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.88) saturate(0.6);
+}
+
 /* Vehicle marker: mode colour disc, heading tick, plate tooltip */
 .unit-pin {
   position: relative;
