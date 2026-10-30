@@ -15,6 +15,7 @@ const pages = {
   map: lazy(() => import('./pages/LiveMap')),
   sos: lazy(() => import('./pages/Sos')),
   rides: lazy(() => import('./pages/Rides')),
+  safety: lazy(() => import('./pages/Safety')),
   fleet: lazy(() => import('./pages/Fleet')),
   drivers: lazy(() => import('./pages/Drivers')),
   tariff: lazy(() => import('./pages/Tariff')),

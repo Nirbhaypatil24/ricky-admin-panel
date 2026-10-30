@@ -9,6 +9,7 @@ import { PageHeader, Plate, Empty, ErrorNote, Loading, Segmented } from '../comp
 import { ConfirmDialog, Modal } from '../components/ui/Modal';
 import { useToast } from '../components/ui/Toast';
 import FleetMap from '../components/map/FleetMap';
+import CabinAudio from '../components/sos/CabinAudio';
 
 const STATUS = {
   ACTIVE: { label: 'Open', cls: 'bg-signal text-white' },
@@ -210,6 +211,7 @@ function AlertListItem({ alert: a, active }) {
 
 function AlertDetail({ alert: a, units }) {
   const { acknowledge, resolve } = useLive();
+  const { params } = useRoute();
   const now = useNow();
   const toast = useToast();
   const [busy, setBusy] = useState(false);
@@ -223,7 +225,7 @@ function AlertDetail({ alert: a, units }) {
     setBusy(true);
     try {
       await acknowledge(a.id);
-      toast.success('SOS acknowledged', 'The alarm stops on every dashboard. Resolve it once the situation is handled.');
+      toast.success('SOS acknowledged', 'The alarm stops on every dashboard, and the meter tells the passengers the control room has seen it.');
     } catch (e) {
       toast.error("Couldn't acknowledge the SOS", errorMessage(e));
     } finally {
@@ -235,7 +237,7 @@ function AlertDetail({ alert: a, units }) {
     setBusy(true);
     try {
       await resolve(a.id, notes.trim());
-      toast.success('SOS resolved', notes.trim() ? 'Your notes are saved with the alert.' : undefined);
+      toast.success('SOS resolved', `SOS clears on the meter within a few seconds.${notes.trim() ? ' Your notes are saved with the alert.' : ''}`);
       setResolveOpen(false);
       setNotes('');
     } catch (e) {
@@ -303,6 +305,8 @@ function AlertDetail({ alert: a, units }) {
           </div>
         )}
       </div>
+
+      <CabinAudio key={a.id} alert={a} isOpen={isOpen} autoStart={params.listen === '1' && params.id === a.id} />
 
       <div className="grid grid-cols-1 border-t border-line lg:grid-cols-[1fr_300px]">
         <FleetMap className="h-[320px] lg:h-auto lg:min-h-[440px]" units={mapUnits} alerts={[a]} selectedAlertId={a.id} fitKey={a.id} />
@@ -376,6 +380,7 @@ function AlertDetail({ alert: a, units }) {
           </>
         }
       >
+        <p className="mb-3 text-sm text-muted">This also switches SOS off on the meter: its screen, LCD, red LED and buzzer clear within a few seconds.</p>
         <label className="field-label" htmlFor="sos-notes">
           What happened? <span className="font-normal text-muted">(optional)</span>
         </label>

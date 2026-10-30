@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BellOff, MapPin, Siren, Phone } from 'lucide-react';
+import { BellOff, Headphones, MapPin, Siren, Phone } from 'lucide-react';
 import { useLive } from '../../live/LiveProvider';
 import { useNow, navigate } from '../../lib/hooks';
 import { elapsed, plate } from '../../lib/format';
@@ -87,6 +87,13 @@ export default function SosStrip() {
           )}
           <button className="btn btn-sm border border-white/50 text-white hover:bg-white/10" onClick={() => navigate('sos', { id: a.id })}>
             <MapPin /> Locate
+          </button>
+          <button
+            className="btn btn-sm border border-white/50 text-white hover:bg-white/10"
+            onClick={() => navigate('sos', { id: a.id, listen: '1' })}
+            title="Listen to the cabin microphone"
+          >
+            <Headphones /> Listen{a.audio?.live ? ' · live' : ''}
           </button>
           <button className="btn btn-sm bg-white text-signal-strong hover:bg-white/90" onClick={ack} disabled={busy}>
             {busy ? 'Acknowledging…' : 'Acknowledge'}

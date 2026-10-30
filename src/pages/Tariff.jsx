@@ -111,7 +111,7 @@ export default function Tariff() {
                   value={form.minimum}
                   onChange={(v) => setForm((f) => ({ ...f, minimum: v }))}
                   error={errs.minimum}
-                  hint="Optional. Saved and sent to meters; current meter software doesn't apply it yet."
+                  hint="Optional. Every ride costs at least this much; the meter shows it from the start of the ride."
                   step="1"
                   placeholder="None"
                 />

@@ -4,6 +4,7 @@ import { useLive } from '../live/LiveProvider';
 import { useLoad, useNow, navigate } from '../lib/hooks';
 import { driverService, vehicleService, errorMessage } from '../lib/api';
 import { ago, plate } from '../lib/format';
+import { rideSummary } from '../lib/fleet';
 import { PageHeader, Plate, ModeBadge, Battery, StateDot, Empty, Loading, Segmented, ErrorNote } from '../components/ui/bits';
 import { ConfirmDialog } from '../components/ui/Modal';
 import { useToast } from '../components/ui/Toast';
@@ -174,6 +175,11 @@ export default function Fleet() {
                     </td>
                     <td>
                       <ModeBadge mode={u.mode} passengers={u.passengers} online={u.online} />
+                      {u.ride && (
+                        <span className="mt-1 block whitespace-nowrap text-xs font-semibold tabular-nums text-ink" title="Fare running on the meter now">
+                          {rideSummary(u.ride).total} running
+                        </span>
+                      )}
                     </td>
                     <td>
                       <Battery pct={u.batteryPct} charging={u.charging} low={u.lowBattery} voltage={u.batteryVoltage} />

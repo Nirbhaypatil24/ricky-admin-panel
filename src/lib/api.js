@@ -56,8 +56,10 @@ export const vehicleService = {
 // ---------- Tariff ----------
 export const fareService = {
   get: () => api.get('/fare/get'),
+  // Body must be a JSON object: axios sends `null` as the text "null", which the server
+  // rejected as "Malformed JSON body" (29 Oct).
   change: ({ newRate, waitingRate, minimumFare }) =>
-    api.post('/fare/change', null, { params: { newRate, waitingRate, minimumFare, updatedBy: 'ADMIN_PANEL' } }),
+    api.post('/fare/change', {}, { params: { newRate, waitingRate, minimumFare, updatedBy: 'ADMIN_PANEL' } }),
   history: (limit = 30) => api.get('/fare/history', { params: { limit } }),
 };
 
@@ -70,12 +72,23 @@ export const rideService = {
 };
 
 // ---------- SOS ----------
+export const drivingService = {
+  events: ({ driverId, type, severity, from, to, excludeBumps, limit = 200, offset = 0 } = {}) =>
+    api.get('/driving/events', {
+      params: { driverId: driverId || undefined, type: type || undefined, severity: severity || undefined, from, to, excludeBumps: excludeBumps ? 1 : undefined, limit, offset },
+    }),
+  event: (id) => api.get(`/driving/events/${id}`),
+  summary: (days = 7) => api.get('/driving/summary', { params: { days } }),
+};
+
 export const sosService = {
   open: () => api.get('/sos/alerts/active', { params: { includeAcknowledged: true } }),
   list: ({ status, driverId, limit = 200 } = {}) => api.get('/sos/alerts', { params: { status, driverId, limit } }),
   get: (id) => api.get(`/sos/alerts/${encodeURIComponent(id)}`),
   acknowledge: (id, by = 'ADMIN') => api.put(`/sos/alerts/${encodeURIComponent(id)}/acknowledge`, { by }),
   resolve: (id, notes, by = 'ADMIN') => api.put(`/sos/alerts/${encodeURIComponent(id)}/resolve`, { by, notes: notes || undefined }),
+  // cabin-microphone recording of an SOS (WAV)
+  audio: (id) => api.get(`/sos/alerts/${encodeURIComponent(id)}/audio`, { responseType: 'blob', timeout: 120000 }),
   sendTest: (alert) => api.post('/sos/alert', alert),
 };
 

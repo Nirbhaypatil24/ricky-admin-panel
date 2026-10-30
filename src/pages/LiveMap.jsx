@@ -3,7 +3,7 @@ import { Crosshair, ExternalLink, Phone, Route as RouteIcon, Search, Siren, X } 
 import { useLive } from '../live/LiveProvider';
 import { useRoute, useNow, navigate } from '../lib/hooks';
 import { locationService, errorMessage } from '../lib/api';
-import { STATE_META } from '../lib/fleet';
+import { STATE_META, rideSummary } from '../lib/fleet';
 import { ago, coords, mapsLink, plate, startOfTodayIST } from '../lib/format';
 import { Plate, ModeBadge, Battery, StateDot } from '../components/ui/bits';
 import FleetMap from '../components/map/FleetMap';
@@ -215,6 +215,24 @@ function Legend() {
   );
 }
 
+/** Fare running on the meter right now (sent by the meter every 10 s during a ride). */
+function RideNow({ ride }) {
+  const r = rideSummary(ride);
+  return (
+    <div className="border-t border-line bg-sunken px-4 py-3">
+      <div className="flex items-baseline justify-between gap-3">
+        <span className="text-xs font-semibold uppercase tracking-wide text-muted">Meter running</span>
+        <span className="font-display text-xl font-semibold tabular-nums">{r.total}</span>
+      </div>
+      {r.lines.map((l) => (
+        <p key={l} className="text-sm text-muted tabular-nums">
+          {l}
+        </p>
+      ))}
+    </div>
+  );
+}
+
 function UnitCard({ unit: u, onClose, onRoute, trail, onCenter }) {
   const now = useNow();
   const routeOn = trail.key === u.key;
@@ -241,6 +259,7 @@ function UnitCard({ unit: u, onClose, onRoute, trail, onCenter }) {
           <X />
         </button>
       </div>
+      {u.ride && <RideNow ride={u.ride} />}
       <dl className="grid grid-cols-2 gap-x-4 gap-y-2 border-t border-line px-4 py-3 text-sm">
         {rows.map(([k, v]) => (
           <div key={k} className="min-w-0">

@@ -76,6 +76,7 @@ export function mergeFleet(vehicles = [], live = {}, devices = {}, alerts = [], 
       gpsFix: null,
       internetOk: null,
       lastHeartbeat: d.lastHeartbeat || null,
+      ride: null, // running ride on the meter (from the device heartbeat)
     });
   }
 
@@ -108,6 +109,7 @@ export function mergeFleet(vehicles = [], live = {}, devices = {}, alerts = [], 
         gpsFix: null,
         internetOk: null,
         lastHeartbeat: null,
+        ride: null,
       });
     }
     return units.get(driverId);
@@ -140,6 +142,7 @@ export function mergeFleet(vehicles = [], live = {}, devices = {}, alerts = [], 
     u.gpsFix = s.gpsFix ?? u.gpsFix;
     u.gpsSource = s.gpsSource || u.gpsSource;
     u.internetOk = s.internetOk ?? u.internetOk;
+    if (s.currentRide !== undefined) u.ride = s.currentRide; // null = no ride running
     u.lastHeartbeat = latest(u.lastHeartbeat, s.lastSeen);
     u.driverName = u.driverName || s.driverName || null;
     u.plateNumber = u.plateNumber || s.plateNumber || null;
@@ -158,7 +161,7 @@ export function mergeFleet(vehicles = [], live = {}, devices = {}, alerts = [], 
       let state = 'offline';
       if (sos) state = 'sos';
       else if (online) state = MODES[u.mode] ? u.mode : 'online';
-      return { ...u, online, sos, state, hasPosition: u.lat !== null && u.lat !== undefined && u.lng !== null && u.lng !== undefined };
+      return { ...u, ride: online ? u.ride : null, online, sos, state, hasPosition: u.lat !== null && u.lat !== undefined && u.lng !== null && u.lng !== undefined };
     })
     .sort((a, b) => rank(a) - rank(b) || String(a.plateNumber || a.key).localeCompare(String(b.plateNumber || b.key)));
 }
@@ -187,4 +190,19 @@ export function alertPosition(a) {
   if (a.locationValid && a.latitude !== null && a.latitude !== undefined) return { lat: a.latitude, lng: a.longitude, estimate: false };
   if (a.lastKnownLocation) return { lat: a.lastKnownLocation.latitude, lng: a.lastKnownLocation.longitude, estimate: true, at: a.lastKnownLocation.at };
   return null;
+}
+
+/** "₹56.20 · 4.1 km" for a running ride (Single), or per seat for Sharing. */
+export function rideSummary(ride) {
+  if (!ride) return null;
+  const inr = (n) => (n === null || n === undefined ? '—' : `₹${Number(n).toFixed(2)}`);
+  const kmTxt = (n) => (n === null || n === undefined ? '' : ` · ${Number(n).toFixed(1)} km`);
+  if (ride.seats && ride.seats.length) {
+    return {
+      total: inr(ride.fare),
+      lines: ride.seats.map((s) => `Seat ${s.seat}: ${inr(s.fare)}${kmTxt(s.distanceKm)}`),
+    };
+  }
+  const wait = ride.waitingMin ? ` · ${Math.round(ride.waitingMin)} min waiting` : '';
+  return { total: inr(ride.fare), lines: [`${kmTxt(ride.distanceKm).slice(3) || '0.0 km'}${wait}`] };
 }

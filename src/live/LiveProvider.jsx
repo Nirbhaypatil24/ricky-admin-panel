@@ -31,6 +31,7 @@ export function LiveProvider({ children }) {
   const [alerts, setAlerts] = useState({});
   const [fare, setFare] = useState(null);
   const [rideFeed, setRideFeed] = useState([]);
+  const [drivingFeed, setDrivingFeed] = useState([]);
   const [link, setLink] = useState('connecting'); // connecting | live | down
   const [api, setApi] = useState({ ok: null, error: null, at: null });
   const [loaded, setLoaded] = useState(false);
@@ -166,6 +167,10 @@ export function LiveProvider({ children }) {
         '/topic/rides',
         json((r) => setRideFeed((prev) => [r, ...prev.filter((x) => x.id !== r.id)].slice(0, 30)))
       );
+      client.subscribe(
+        '/topic/driving-events',
+        json((e) => setDrivingFeed((prev) => [e, ...prev.filter((x) => x.id !== e.id)].slice(0, 50)))
+      );
       client.subscribe('/topic/fare-rate', json((f) => setFare((prev) => ({ ...prev, ...f }))));
     };
     client.onWebSocketClose = () => setLink('down');
@@ -231,6 +236,7 @@ export function LiveProvider({ children }) {
     fare,
     setFare,
     rideFeed,
+    drivingFeed,
     refresh,
     acknowledge,
     resolve,
